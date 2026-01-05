@@ -52,11 +52,16 @@
 
 <main>
   <div id="content"></div>
+  <div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:999;">
+  <div style="background:#111a2e; margin:10% auto; padding:16px; max-width:500px; border-radius:16px; color:#e7eefc;">
+    <div id="modal-content"></div>
+    <button onclick="closeModal()" style="margin-top:12px; width:100%; padding:10px; border:none; border-radius:10px;">
+      Cerrar
+    </button>
+  </div>
+</div>
 
-  <details>
-    <summary>Ver códigos y colores</summary>
-    <div class="legend" id="legend"></div>
-  </details>
+  
 </main>
 
 <script>
@@ -83,6 +88,37 @@ const AREAS = {
   "Eco Convencional": {colorVar:"--brown"},
   "Biopsia Mamá": {colorVar:"--pink"},
   "Personal excedente (14)": {colorVar:"--purple"}
+};
+const CHECKLISTS = {
+  "Sedación": {
+    "Licenciados": `
+      <b>Procedimiento Seguro</b><br><br>
+      ✔ Verificar identidad del paciente y firma del CI<br>
+      ✔ Exámenes de laboratorio<br>
+      ✔ Estado clínico<br>
+      ✔ CFV<br>
+      ✔ Sesión educativa<br>
+      ✔ Apoyo emocional<br><br>
+      <b>Post procedimiento</b><br>
+      ✔ CFV<br>
+      ✔ Monitoreo del estado clínico<br>
+      ✔ Zona de punción<br>
+      ✔ Notas de enfermería
+    `,
+    "Técnicos": `
+      <b>Equipamiento sala de recuperación</b><br><br>
+      ✔ Vestimenta de camillas<br>
+      ✔ Oxígeno<br>
+      ✔ Aspiración<br>
+      ✔ Coche de paro<br>
+      ✔ Ambú<br><br>
+      ✔ Llamado del paciente<br>
+      ✔ Verificar identidad del paciente<br>
+      ✔ Colocación de bata, gorro y botas<br>
+      ✔ Traslado a sala de procedimientos<br>
+      ✔ Asistencia de material según solicitud de la enfermera
+    `
+  }
 };
 
 /** 3) DATA: Aquí actualizas cada día (solo esto) */
@@ -132,6 +168,26 @@ const DATA = {
     ]
   }
 };
+  
+function openChecklist(area, tipo){
+  const modal = document.getElementById("modal");
+  const content = document.getElementById("modal-content");
+
+  const checklist = CHECKLISTS[area]?.[tipo];
+
+  if(!checklist){
+    content.innerHTML = "<b>No hay checklist definido.</b>";
+  } else {
+    content.innerHTML = checklist;
+  }
+
+  modal.style.display = "block";
+}
+
+function closeModal(){
+  document.getElementById("modal").style.display = "none";
+}
+
 
 /** ---------- UI RENDER ---------- */
 const daySelect = document.getElementById("day");
@@ -157,19 +213,27 @@ function buildDayOptions(){
   if(keys.length) daySelect.value = keys[0];
 }
 
-function areaTag(area){
+function areaTag(area, tipo){
   const cfg = AREAS[area] || {colorVar:"--line"};
   const color = cssVar(cfg.colorVar);
+
   const tag = document.createElement("div");
   tag.className = "tag";
+  tag.style.cursor = "pointer";
   tag.style.background = "rgba(255,255,255,.04)";
   tag.style.border = "1px solid var(--line)";
+
+  tag.onclick = () => openChecklist(area, tipo);
+
   const dot = document.createElement("span");
   dot.className = "dot";
   dot.style.background = color;
+
   const txt = document.createElement("span");
   txt.textContent = area;
-  tag.appendChild(dot); tag.appendChild(txt);
+
+  tag.appendChild(dot);
+  tag.appendChild(txt);
   return tag;
 }
 
@@ -193,7 +257,7 @@ function render(){
     b.items.forEach(item=>{
       const card = document.createElement("div");
       card.className = "card";
-      card.appendChild(areaTag(item.area));
+      card.appendChild(areaTag(item.area, b.tipo));
 
       const who = document.createElement("div");
       who.className = "who";
@@ -229,7 +293,7 @@ function render(){
     });
   });
 
-  renderLegend();
+
 }
 
 function renderLegend(){
