@@ -3,22 +3,174 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Rol de Turnos</title>
+  <title>Rol de Turnos – Enero 2026</title>
   <style>
-    body{font-family:system-ui; margin:0; padding:16px;}
-    .card{border:1px solid #ddd; border-radius:12px; padding:12px; margin:10px 0;}
-    h1{font-size:18px; margin:0 0 10px;}
-    .muted{color:#666;}
+    :root{
+      --bg:#f7f7fb; --card:#fff; --txt:#111; --muted:#666; --line:#e6e6ef;
+      --blue:#0b4aa2; --red:#c01818; --cyan:#0aa6b5; --green:#0a8f3d;
+      --brick:#8a2d1a; --brown:#6b3b16; --pink:#e14a8a; --yellow:#caa300; --purple:#6a2bbf;
+    }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; background:var(--bg); color:var(--txt); margin:0; padding:14px;}
+    header{display:flex; gap:10px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;}
+    h1{font-size:18px; margin:0;}
+    .muted{color:var(--muted); font-size:12px; margin-top:4px;}
+    .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; margin-top:12px; box-shadow:0 1px 0 rgba(0,0,0,.03);}
+    .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+    .btn{border:1px solid var(--line); background:#fff; padding:8px 10px; border-radius:10px; cursor:pointer; font-size:13px;}
+    .btn:active{transform:translateY(1px);}
+    .pill{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:#fff; font-size:12px;}
+    .dot{width:9px; height:9px; border-radius:50%;}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    /* Mantiene saltos de línea como Block de notas */
+    .prelike{white-space:pre-line; line-height:1.35;}
+    .bigdate{font-size:16px; font-weight:700; margin:0 0 8px;}
+    .warn{background:#fff3cd; border:1px solid #ffe69c; color:#664d03;}
+    .small{font-size:12px;}
+    select,input{border:1px solid var(--line); padding:8px 10px; border-radius:10px; font-size:13px; background:#fff;}
+    .legend{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px;}
+    .legend .pill{justify-content:flex-start;}
+    @media (max-width:420px){ body{padding:10px;} }
   </style>
 </head>
 <body>
-  <h1>Rol de Turnos – Enero 2026</h1>
-  <div class="muted">Si ves esto, GitHub Pages ya está funcionando ✅</div>
 
-  <div class="card">
-    <b>06/01/2026</b><br>
-    Biopsia: QUISPE PINCOS MARILU (34)<br>
-    URI: LOPEZ REYNOSO LUIGI (26)
+<header>
+  <div>
+    <h1>Rol de Turnos – Enero 2026</h1>
+    <div class="muted">Vista “Solo HOY” para evitar confusiones ✅</div>
   </div>
+
+  <div class="row">
+    <button class="btn" id="btnHoy">Hoy</button>
+    <button class="btn" id="btnManana">Mañana</button>
+    <label class="small muted">Ver otro día:</label>
+    <input type="date" id="datePick" />
+  </div>
+</header>
+
+<div class="card warn small" id="status">
+  Si ves esto, la página está publicada correctamente ✅
+</div>
+
+<div class="card" id="cardHoy">
+  <p class="bigdate" id="tituloFecha">HOY</p>
+  <div class="prelike mono" id="contenidoRol"></div>
+</div>
+
+<div class="card">
+  <div class="row" style="justify-content:space-between;">
+    <div class="muted">Códigos</div>
+    <div class="muted">Colores / Áreas</div>
+  </div>
+  <div class="prelike small mono" id="codigos"></div>
+
+  <div class="legend">
+    <span class="pill"><span class="dot" style="background:var(--blue)"></span>Biopsia</span>
+    <span class="pill"><span class="dot" style="background:var(--red)"></span>URI</span>
+    <span class="pill"><span class="dot" style="background:var(--cyan)"></span>Tomografía (TEM)</span>
+    <span class="pill"><span class="dot" style="background:var(--green)"></span>Resonancia (RM)</span>
+    <span class="pill"><span class="dot" style="background:var(--brick)"></span>Tópico</span>
+    <span class="pill"><span class="dot" style="background:var(--brown)"></span>Eco conv.</span>
+    <span class="pill"><span class="dot" style="background:var(--pink)"></span>Mamá</span>
+    <span class="pill"><span class="dot" style="background:var(--yellow)"></span>Sedación</span>
+    <span class="pill"><span class="dot" style="background:var(--purple)"></span>14 excedente</span>
+  </div>
+</div>
+
+<script>
+  // =========================
+  // 1) CONFIGURA AQUÍ TUS DATOS POR DÍA
+  // Formato de fecha: YYYY-MM-DD
+  // El contenido es texto “tipo block de notas” (saltos de línea).
+  // =========================
+  const ROLES = {
+    "2026-01-06": `
+06/01/2026
+Biopsia : QUISPE PINCOS MARILU (34) 8am a 8pm
+URI     : LOPEZ REYNOSO LUIGI (26) 7am a 7pm
+Sedación: FLORES DEL VALLE GUADALUPE (26)
+RM      : APONTE LLACCHO ROSA (26)
+TEM     : ARIAS OSORIO JOVITA (26)
+TEM     : ESTRADA SALAS ELIZABETH (26)
+    `.trim(),
+
+    // EJEMPLO: agrega más días así
+    // "2026-01-07": `
+    // 07/01/2026
+    // ...
+    // `.trim(),
+  };
+
+  // =========================
+  // 2) TABLA DE CÓDIGOS (se muestra abajo)
+  // =========================
+  const CODIGOS = `
+34  : 8am a 8pm
+26  : 7am a 7pm
+29  : 7pm a 7am
+72  : libre por radiación (según tu regla interna)
+14  : 8am a 2pm
+167 : 6am a 6pm
+LC  : libre por cumpleaños
+`.trim();
+
+  document.getElementById("codigos").textContent = CODIGOS;
+
+  // =========================
+  // 3) LÓGICA “SOLO HOY”
+  // - Por defecto muestra HOY.
+  // - Puedes ver “mañana” o escoger fecha.
+  // =========================
+  function fmtES(iso){
+    const [y,m,d] = iso.split("-");
+    return `${d}/${m}/${y}`;
+  }
+
+  function setDay(isoDate){
+    const box = document.getElementById("contenidoRol");
+    const title = document.getElementById("tituloFecha");
+    const text = ROLES[isoDate];
+
+    title.textContent = `ROL DEL DÍA: ${fmtES(isoDate)}`;
+
+    if (!text) {
+      box.textContent = `No hay rol cargado para ${fmtES(isoDate)}.\n\n👉 Edita index.html y agrega el día en ROLES["${isoDate}"].`;
+      return;
+    }
+    box.textContent = text;
+  }
+
+  function toISODate(d){
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+
+  const today = new Date();
+  const isoToday = toISODate(today);
+
+  const datePick = document.getElementById("datePick");
+  datePick.value = isoToday;
+
+  setDay(isoToday);
+
+  document.getElementById("btnHoy").addEventListener("click", () => {
+    datePick.value = isoToday;
+    setDay(isoToday);
+  });
+
+  document.getElementById("btnManana").addEventListener("click", () => {
+    const d = new Date(today);
+    d.setDate(d.getDate()+1);
+    const iso = toISODate(d);
+    datePick.value = iso;
+    setDay(iso);
+  });
+
+  datePick.addEventListener("change", (e) => setDay(e.target.value));
+</script>
+
 </body>
 </html>
+
