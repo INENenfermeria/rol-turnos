@@ -73,7 +73,6 @@ const SHIFT_CODES = {
   "14": "8:00 am – 2:00 pm",
   "167":"6:00 am – 6:00 pm",
   "LC": "Libre por cumpleaños",
-  // Si vas a separar 72 en dos, puedes poner: "72R": "...", "72M": "..."
 };
 
 /** 2) CONFIG: Áreas con color */
@@ -88,8 +87,11 @@ const AREAS = {
   "Biopsia Mamá": {colorVar:"--pink"},
   "Personal excedente (14)": {colorVar:"--purple"},
   "Código Rojo": {colorVar:"--red"},
-
+  "Guardia nocturna": {colorVar:"--line"},
+  "Cardiología": {colorVar:"--line"},
 };
+
+/** 2.1) CHECKLISTS (lo que sale al tocar el área) */
 const CHECKLISTS = {
   "Sedación": {
     "Licenciados": `
@@ -118,23 +120,26 @@ const CHECKLISTS = {
       ✔ Colocación de bata, gorro y botas<br>
       ✔ Traslado a sala de procedimientos<br>
       ✔ Asistencia de material según solicitud de la enfermera
-    `,
-    "Código Rojo": {
+    `
+  },
+
+  "Código Rojo": {
     "Licenciados": `
       <b>Código Rojo – Rol Licenciado(a)</b><br><br>
       ✔ Lic. de TEM: Administración del coche de paro<br>
       ✔ Apoyo inmediato a TEM ante emergencia roja<br><br>
-      <i>Nota:</i> El licenciado(a) marcado en rojo debe ayudar a TEM en emergencia roja.
+      <i>Nota:</i> El licenciado(a) marcado en rojo debe ayudar a TEM ante emergencia roja.
     `,
     "Técnicos": `
       <b>Código Rojo – Rol Técnico(a)</b><br><br>
       ✔ Tec. de Enf.: Sistema de oxígeno<br>
       ✔ Apoyo inmediato a TEM ante emergencia roja<br><br>
-      <i>Nota:</i> La técnica(o) marcada en rojo debe ayudar a TEM en emergencia roja.
+      <i>Nota:</i> El técnico(a) marcado en rojo debe ayudar a TEM ante emergencia roja.
     `
-  },
+  }
+};
 
-/** 3) DATA: Aquí actualizas cada día (solo esto) */
+/** 3) DATA: Aquí actualizas cada día */
 const DATA = {
   "2026-01-06": {
     servicio: "Radiodiagnóstico",
@@ -148,9 +153,8 @@ const DATA = {
           {nombre:"ARIAS OSORIO JOVITA", codigo:"26"},
           {nombre:"ESTRADA SALAS ELIZABETH", codigo:"26"}
         ]},
-        // Si tienes Biopsia Mamá en ese día, la agregas así:
-        // { area:"Biopsia Mamá", personas:[{nombre:"ARIAS OSORIO JOVITA", codigo:"26"}]},
       ]},
+
       { tipo:"Técnicos", items:[
         { area:"Tópico", personas:[{nombre:"PICON BRANDAN ESMILIA SUNAMITA", codigo:"167"}]},
         { area:"Tomografía (TEM)", personas:[
@@ -162,12 +166,21 @@ const DATA = {
           {nombre:"MIRAVAL PISCONTE LIZ NERIDA", codigo:"26"}
         ]},
       ]},
+
+      { tipo:"Código Rojo", items:[
+        { area:"Código Rojo", personas:[
+          {nombre:"PAZOS SUAREZ MARLENE (Lic.)", codigo:"26"},
+          {nombre:"CRUZ NAVARRO MARIA (Téc.)", codigo:"26"}
+        ]}
+      ]},
+
       { tipo:"Guardia nocturna", items:[
         { area:"Guardia nocturna", personas:[
           {nombre:"GUTIERREZ LARA CARMEN (Lic.)", codigo:"29"},
           {nombre:"RIVAS ALARCON DAVID (Téc.)", codigo:"29"}
         ]}
       ]},
+
       { tipo:"Cardiología", items:[
         { area:"Cardiología", personas:[
           {nombre:"DE LA CRUZ VILCA DANIXA (Lic.)", codigo:"26"},
@@ -177,32 +190,23 @@ const DATA = {
           {nombre:"CRUZ NAVARRO MARIA (Téc.)", codigo:"26"},
           {nombre:"REQUEJO ANCAJIMA GLADYS (Téc.)", codigo:"26"}
         ]}
-       ]},
-       { tipo:"Código Rojo", items:[
-        { area:"Código Rojo", personas:[
-          {nombre:"PAZOS SUAREZ MARLENE (Lic.)", codigo:"26", rol:"Licenciados"},
-          {nombre:"CRUZ NAVARRO MARIA (Téc.)", codigo:"26", rol:"Técnicos"}
-        ]}
-      ]},
+      ]}
+    ]
+  }
+};
+
+/** ---------- MODAL ---------- */
 function openChecklist(area, tipo){
   const modal = document.getElementById("modal");
   const content = document.getElementById("modal-content");
-
   const checklist = CHECKLISTS[area]?.[tipo];
 
-  if(!checklist){
-    content.innerHTML = "<b>No hay checklist definido.</b>";
-  } else {
-    content.innerHTML = checklist;
-  }
-
+  content.innerHTML = checklist ? checklist : "<b>No hay checklist definido.</b>";
   modal.style.display = "block";
 }
-
 function closeModal(){
   document.getElementById("modal").style.display = "none";
 }
-
 
 /** ---------- UI RENDER ---------- */
 const daySelect = document.getElementById("day");
@@ -210,7 +214,6 @@ const content = document.getElementById("content");
 const pretty = document.getElementById("pretty");
 
 function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-
 function fmtDate(iso){
   const d = new Date(iso+"T00:00:00");
   return d.toLocaleDateString("es-PE", {weekday:"long", year:"numeric", month:"long", day:"2-digit"});
@@ -224,7 +227,6 @@ function buildDayOptions(){
     opt.textContent = k;
     daySelect.appendChild(opt);
   });
-  // Selección por defecto: el primero
   if(keys.length) daySelect.value = keys[0];
 }
 
@@ -237,7 +239,6 @@ function areaTag(area, tipo){
   tag.style.cursor = "pointer";
   tag.style.background = "rgba(255,255,255,.04)";
   tag.style.border = "1px solid var(--line)";
-
   tag.onclick = () => openChecklist(area, tipo);
 
   const dot = document.createElement("span");
@@ -256,11 +257,13 @@ function render(){
   const key = daySelect.value;
   const day = DATA[key];
   content.innerHTML = "";
+
   if(!day){
     content.innerHTML = `<div class="empty">No hay datos para este día.</div>`;
     pretty.textContent = "";
     return;
   }
+
   pretty.textContent = "• " + fmtDate(key) + " • " + (day.servicio || "");
 
   day.bloques.forEach(b=>{
@@ -307,27 +310,9 @@ function render(){
       content.appendChild(card);
     });
   });
-
-
-}
-
-function renderLegend(){
-  const legend = document.getElementById("legend");
-  const codes = Object.entries(SHIFT_CODES)
-    .map(([k,v])=>`<span class="pill"><b>${k}</b> → ${v}</span>`)
-    .join("");
-
-  const colors = Object.entries(AREAS)
-    .map(([k,v])=>{
-      const c = cssVar(v.colorVar);
-      return `<span class="pill"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${c};margin-right:6px;"></span>${k}</span>`;
-    }).join("");
-
-  legend.innerHTML = `<div><b>Códigos:</b><br>${codes}</div><br><div><b>Colores:</b><br>${colors}</div>`;
 }
 
 daySelect.addEventListener("change", render);
-
 buildDayOptions();
 render();
 </script>
