@@ -65,160 +65,220 @@
 </main>
 
 <script>
-/** 1) CONFIG: Códigos de turno */
-const SHIFT_CODES = {
-  "34": "8:00 am – 8:00 pm",
-  "26": "7:00 am – 7:00 pm",
-  "29": "7:00 pm – 7:00 am",
-  "14": "8:00 am – 2:00 pm",
-  "167":"6:00 am – 6:00 pm",
-  "turno mañana": "8:00 am – 2:00 pm",
-  "turno tarde": "8:00 am – 2:00 pm",
-  "LC": "Libre por cumpleaños",
-};
-
-/** 2) CONFIG: Áreas con color */
-const AREAS = {
-  "Sedación": {colorVar:"--yellow"},
-  "Biopsia": {colorVar:"--blue"},
-  "URI": {colorVar:"--red"},
-  "Tomografía (TEM)": {colorVar:"--cyan"},
-  "Resonancia Magnética": {colorVar:"--green"},
-  "Tópico": {colorVar:"--brick"},
-  "Eco Convencional": {colorVar:"--brown"},
-  "Biopsia Mama": {colorVar:"--pink"},
-  "Personal excedente (14)": {colorVar:"--purple"},
-  "Código Rojo": {colorVar:"--red"},
-  "Guardia nocturna": {colorVar:"--line"},
-  "Cardiología": {colorVar:"--line"},
-};
-
-/** 2.1) CHECKLISTS (lo que sale al tocar el área) */
 const CHECKLISTS = {
+
+  /* ===================== SEDACIÓN ===================== */
   "Sedación": {
     "Licenciados": `
-      <b>Procedimiento Seguro</b><br><br>
-      ✔ Verificar identidad del paciente y firma del CI<br>
-      ✔ Exámenes de laboratorio<br>
-      ✔ Estado clínico<br>
-      ✔ CFV<br>
-      ✔ Sesión educativa<br>
-      ✔ Apoyo emocional<br><br>
+      <b>Procedimiento Seguro – Sedación</b><br><br>
+      ☐ Verificar identidad del paciente<br>
+      ☐ Verificar firma del CI<br>
+      ☐ Revisar exámenes de laboratorio<br>
+      ☐ Evaluar estado clínico del paciente<br>
+      ☐ Control de CFV<br>
+      ☐ Sesión educativa<br>
+      ☐ Apoyo emocional<br><br>
+
       <b>Post procedimiento</b><br>
-      ✔ CFV<br>
-      ✔ Monitoreo del estado clínico<br>
-      ✔ Zona de punción<br>
-      ✔ Notas de enfermería
+      ☐ Control de CFV<br>
+      ☐ Monitoreo del estado clínico<br>
+      ☐ Vigilancia de zona de punción<br>
+      ☐ Registro en notas de enfermería<br><br>
+
+      <i>Nota de seguridad:</i> Garantizar identificación correcta, vigilancia continua y disponibilidad de equipamiento de emergencia.
     `,
     "Técnicos": `
-      <b>Equipamiento sala de recuperación</b><br><br>
-      ✔ Vestimenta de camillas<br>
-      ✔ Oxígeno<br>
-      ✔ Aspiración<br>
-      ✔ Coche de paro<br>
-      ✔ Ambú<br><br>
-      ✔ Llamado del paciente<br>
-      ✔ Verificar identidad del paciente<br>
-      ✔ Colocación de bata, gorro y botas<br>
-      ✔ Traslado a sala de procedimientos<br>
-      ✔ Asistencia de material según solicitud de la enfermera
+      <b>Preparación y apoyo – Sedación</b><br><br>
+      ☐ Vestimenta de camillas<br>
+      ☐ Oxígeno<br>
+      ☐ Aspiración<br>
+      ☐ Coche de paro<br>
+      ☐ Ambú<br>
+      ☐ Llamado del paciente<br>
+      ☐ Verificar identidad del paciente<br>
+      ☐ Colocación de bata, gorro y botas<br>
+      ☐ Traslado a sala de procedimientos<br>
+      ☐ Asistencia de material según indicación de la enfermera
     `
   },
 
-  "Código Rojo": {
+  /* ===================== CARDIOLOGÍA ===================== */
+  "Cardiología": {
     "Licenciados": `
-      <b>Código Rojo – Rol Licenciado(a)</b><br><br>
-      ✔ Lic. de TEM: Administración del coche de paro<br>
-      ✔ Apoyo inmediato a TEM ante emergencia roja<br><br>
-      <i>Nota:</i> El licenciado(a) marcado en rojo debe ayudar a TEM ante emergencia roja.
+      <b>Intervenciones – Cardiología</b><br><br>
+      ☐ Admisión del paciente<br>
+      ☐ Asignación del médico<br>
+      ☐ Registro e identificación del paciente<br>
+      ☐ Evaluación de riesgo de caída<br>
+      ☐ Atención de procedimientos especiales (EKG – MAPA – HOLTER)<br>
+      ☐ Sesión educativa<br>
+      ☐ Consejería al paciente
     `,
     "Técnicos": `
-      <b>Código Rojo – Rol Técnico(a)</b><br><br>
-      ✔ Tec. de Enf.: Sistema de oxígeno<br>
-      ✔ Apoyo inmediato a TEM ante emergencia roja<br><br>
-      <i>Nota:</i> El técnico(a) marcado en rojo debe ayudar a TEM ante emergencia roja.
+      <b>Apoyo técnico – Cardiología</b><br><br>
+      ☐ Recepción de voucher<br>
+      ☐ Verificar historia clínica física<br>
+      ☐ Informar al paciente si la HC no ha llegado<br>
+      ☐ Asignar médico<br>
+      ☐ Indicar espera al paciente<br>
+      ☐ Entregar HC a enfermería para admisión interna<br>
+      ☐ Llamado e identificación de pacientes<br>
+      ☐ Control de peso y talla<br>
+      ☐ Colocación de electrodos<br>
+      ☐ Asistencia al paciente durante el procedimiento
     `
   },
 
+    "URI": {
+    "Licenciados": `
+      <b>Intervenciones – URI</b><br><br>
+      ☐ Protección radiológica<br>
+      ☐ Procedimiento seguro:<br>
+      &nbsp;&nbsp;• Verificar firma del CI<br>
+      &nbsp;&nbsp;• Revisar exámenes de laboratorio<br>
+      &nbsp;&nbsp;• Evaluar estado clínico del paciente<br>
+      &nbsp;&nbsp;• Control de CFV<br><br>
+
+      ☐ Sesión educativa<br>
+      ☐ Apoyo emocional<br><br>
+
+      <b>Durante el procedimiento</b><br>
+      ☐ Monitoreo de CFV<br>
+      ☐ Monitoreo del estado clínico<br>
+      ☐ Instrumentación<br><br>
+
+      <b>Post procedimiento</b><br>
+      ☐ Control de CFV<br>
+      ☐ Monitoreo del estado clínico<br>
+      ☐ Vigilancia de zona de punción<br>
+      ☐ Registro en notas de enfermería<br><br>
+
+      <i>Nota de seguridad:</i> Mantener protección radiológica y vigilancia clínica permanente del paciente.
+    `,
+    "Técnicos": `
+      <b>Apoyo técnico – URI</b><br><br>
+      ☐ Colocarse EPP y dosímetro<br>
+      ☐ Equipamiento para el procedimiento<br>
+      ☐ Llamado del paciente<br>
+      ☐ Verificar identidad del paciente<br>
+      ☐ Verificar que no porte objetos metálicos<br>
+      ☐ Colocar bata, gorro y botas<br>
+      ☐ Asistencia al paciente durante el procedimiento
+    `
+  },
+
+  /* ===================== BIOPSIA ===================== */
+  "Biopsia": {
+    "Licenciados": `
+      <b>Procedimiento – Biopsia</b><br><br>
+      ☐ Verificar laboratorio y estado clínico<br>
+      ☐ Control de CFV<br>
+      ☐ Sesión educativa<br>
+      ☐ Apoyo emocional<br>
+      ☐ Monitoreo del paciente durante el procedimiento<br>
+      ☐ Instrumentación<br>
+      ☐ Recepción y rotulado de muestra<br>
+      ☐ Post procedimiento: CFV y zona de punción<br>
+      ☐ Notas de enfermería
+    `,
+    "Técnicos": `
+      <b>Apoyo técnico – Biopsia</b><br><br>
+      ☐ Llamado del paciente<br>
+      ☐ Identificación del paciente<br>
+      ☐ Asistencia al paciente<br>
+      ☐ Coordinación durante el procedimiento<br>
+      ☐ Apoyo durante el examen<br>
+      ☐ Entrega de hielo al paciente
+    `
+  },
+
+  /* ===================== BIOPSIA DE MAMA ===================== */
   "Biopsia de Mama": {
     "Licenciados": `
-      ✔ Procedimiento Seguro
-      ✔ Sesion educativa
-      ✔ Apoyo emocional
-      ✔ Instrumentacion 
-      ✔ Monitoreo del paciente 
-      ✔ Notas de Enfermeria 
-      
+      <b>Procedimiento – Biopsia de Mama</b><br><br>
+      ☐ Procedimiento seguro<br>
+      ☐ Sesión educativa<br>
+      ☐ Apoyo emocional<br>
+      ☐ Instrumentación<br>
+      ☐ Monitoreo del paciente<br>
+      ☐ Notas de enfermería
     `,
     "Técnicos": `
-      ✔ Llamado del paciente  
-      ✔ Identificación del paciente
-      ✔ Asistir al paciente  
-      ✔ Coordinar la asistencia de la biopsia  
-      ✔ Durante el examen  
-      ✔ Dar hielo al paciente
-     
+      <b>Apoyo técnico – Biopsia de Mama</b><br><br>
+      ☐ Llamado del paciente<br>
+      ☐ Identificación del paciente<br>
+      ☐ Asistencia al paciente<br>
+      ☐ Coordinación de la biopsia<br>
+      ☐ Apoyo durante el examen<br>
+      ☐ Aplicación de hielo al paciente
+    `
+  },
+
+  /* ===================== TEM ===================== */
+  "Tomografía (TEM)": {
+    "Licenciados": `
+      <b>Intervenciones – TEM</b><br><br>
+      ☐ Identificación del paciente<br>
+      ☐ Valoración clínica<br>
+      ☐ Procedimiento seguro<br>
+      ☐ Apoyo emocional<br>
+      ☐ Canalización<br>
+      ☐ Monitoreo del paciente<br>
+      ☐ Retiro de catéter<br>
+      ☐ Educación para cuidados de alta
+    `,
+    "Técnicos": `
+      <b>Apoyo técnico – TEM</b><br><br>
+      ☐ Llamado del paciente<br>
+      ☐ Verificación de identidad<br>
+      ☐ Confirmar que no porte objetos metálicos<br>
+      ☐ Entrega de jarras<br>
+      ☐ Asistencia al paciente durante el examen<br>
+      ☐ Registrar hora de salida del TEM
+    `
+  },
+
+  /* ===================== RESONANCIA MAGNÉTICA ===================== */
+  "Resonancia Magnética": {
+    "Licenciados": `
+      <b>Intervenciones – Resonancia Magnética</b><br><br>
+      ☐ Identificación y valoración del paciente<br>
+      ☐ Procedimiento seguro<br>
+      ☐ Apoyo emocional<br>
+      ☐ Canalización<br>
+      ☐ Monitoreo del paciente<br>
+      ☐ Retiro de catéter<br>
+      ☐ Educación para cuidados de alta
+    `,
+    "Técnicos": `
+      <b>Apoyo técnico – Resonancia Magnética</b><br><br>
+      ☐ Llamado del paciente<br>
+      ☐ Identificación del paciente<br>
+      ☐ Verificar que no porte objetos metálicos<br>
+      ☐ Colocación de audífonos<br>
+      ☐ Asistencia al paciente durante el examen
+    `
+  },
+
+  /* ===================== CÓDIGO ROJO ===================== */
+  "Código Rojo": {
+    "Licenciados": `
+      <b>Código Rojo – Licenciado(a)</b><br><br>
+      ☐ Administración del coche de paro<br>
+      ☐ Apoyo inmediato al equipo TEM<br><br>
+      <i>Nota de seguridad:</i> El licenciado(a) asignado debe acudir de inmediato ante emergencia roja.
+    `,
+    "Técnicos": `
+      <b>Código Rojo – Técnico(a)</b><br><br>
+      ☐ Manejo del sistema de oxígeno<br>
+      ☐ Apoyo inmediato al equipo TEM<br><br>
+      <i>Nota de seguridad:</i> El técnico(a) asignado debe acudir de inmediato ante emergencia roja.
     `
   }
+
 };
+</script>
 
-/** 3) DATA: Aquí actualizas cada día */
-const DATA = {
-  "2026-01-06": {
-    servicio: "Radiodiagnóstico",
-    bloques: [
-      { tipo:"Licenciados", items:[
-        { area:"Sedación", personas:[{nombre:"FLORES DEL VALLE GUADALUPE", codigo:"26"}]},
-        { area:"Biopsia", personas:[{nombre:"QUISPE PINCOS MARILU", codigo:"34"}]},
-        { area:"URI", personas:[{nombre:"LOPEZ REYNOSO LUIGI", codigo:"26"}]},
-        { area:"Resonancia Magnética", personas:[{nombre:"APONTE LLACCHO ROSA", codigo:"26"}]},
-        { area:"Biopsia de Mama", personas:[{nombre:"ARIAS OSORIO JOVITA", codigo:"26"}]},
-        { area:"Tomografía (TEM)", personas:[
-          {nombre:"ARIAS OSORIO JOVITA", codigo:"26"},
-          {nombre:"ESTRADA SALAS ELIZABETH", codigo:"26"},
-          {nombre:"FLORES DEL VALLE GUADALUPE", codigo:"26"},
-        ]},
-      ]},
-
-      { tipo:"Técnicos", items:[
-        { area:"Tópico", personas:[{nombre:"PICON BRANDAN ESMILIA SUNAMITA", codigo:"167"}]},
-        { area:"Tomografía (TEM)", personas:[
-          {nombre:"MAYON AYALA LEYLA", codigo:"26"},
-          {nombre:"PEREZ DIAZ ABAD", codigo:"34"}
-        ]},
-        { area:"Eco Convencional", personas:[
-          {nombre:"HUAYTA BIZARRO MARISOL LUISA", codigo:"26"},
-          {nombre:"MIRAVAL PISCONTE LIZ NERIDA", codigo:"26"}
-        ]},
-      ]},
-
-      { tipo:"Código Rojo", items:[
-        { area:"Código Rojo", personas:[
-          {nombre:"PAZOS SUAREZ MARLENE (Lic.)", codigo:"26"},
-          {nombre:"CRUZ NAVARRO MARIA (Téc.)", codigo:"26"}
-        ]}
-      ]},
-
-      { tipo:"Guardia nocturna", items:[
-        { area:"Guardia nocturna", personas:[
-          {nombre:"GUTIERREZ LARA CARMEN (Lic.)", codigo:"29"},
-          {nombre:"RIVAS ALARCON DAVID (Téc.)", codigo:"29"}
-        ]}
-      ]},
-
-      { tipo:"Cardiología", items:[
-        { area:"Cardiología", personas:[
-          {nombre:"DE LA CRUZ VILCA DANIXA (Lic.)", codigo:"26"},
-          {nombre:"VEJARANO CAMPOS GIOVANNA (Lic.)", codigo:"26"},
-          {nombre:"PAZOS SUAREZ MARLENE (Lic.)", codigo:"26"},
-          {nombre:"ALZAMORA SARITUPA AMABELA (Téc.)", codigo:"26"},
-          {nombre:"CRUZ NAVARRO MARIA (Téc.)", codigo:"26"},
-          {nombre:"REQUEJO ANCAJIMA GLADYS (Téc.)", codigo:"26"}
-        ]}
-      ]}
-    ]
-  }
-};
 
 /** ---------- MODAL ---------- */
 function openChecklist(area, tipo){
