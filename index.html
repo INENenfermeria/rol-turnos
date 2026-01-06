@@ -73,7 +73,6 @@ const SHIFT_CODES = {
   "14": "8:00 am – 2:00 pm",
   "167":"6:00 am – 6:00 pm",
   "LC": "Libre por cumpleaños",
-  "72": "Libre por radiación"
   // Si vas a separar 72 en dos, puedes poner: "72R": "...", "72M": "..."
 };
 
@@ -88,6 +87,8 @@ const AREAS = {
   "Eco Convencional": {colorVar:"--brown"},
   "Biopsia Mamá": {colorVar:"--pink"},
   "Personal excedente (14)": {colorVar:"--purple"}
+  "Código Rojo": {colorVar:"--red"},
+
 };
 const CHECKLISTS = {
   "Sedación": {
@@ -120,6 +121,20 @@ const CHECKLISTS = {
     `
   }
 };
+  "Código Rojo": {
+    "Licenciados": `
+      <b>Código Rojo – Rol Licenciado(a)</b><br><br>
+      ✔ Lic. de TEM: Administración del coche de paro<br>
+      ✔ Apoyo inmediato a TEM ante emergencia roja<br><br>
+      <i>Nota:</i> El licenciado(a) marcado en rojo debe ayudar a TEM en emergencia roja.
+    `,
+    "Técnicos": `
+      <b>Código Rojo – Rol Técnico(a)</b><br><br>
+      ✔ Tec. de Enf.: Sistema de oxígeno<br>
+      ✔ Apoyo inmediato a TEM ante emergencia roja<br><br>
+      <i>Nota:</i> La técnica(o) marcada en rojo debe ayudar a TEM en emergencia roja.
+    `
+  },
 
 /** 3) DATA: Aquí actualizas cada día (solo esto) */
 const DATA = {
@@ -168,7 +183,12 @@ const DATA = {
     ]
   }
 };
-  
+   { tipo:"Código Rojo", items:[
+        { area:"Código Rojo", personas:[
+          {nombre:"PAZOS SUAREZ MARLENE (Lic.)", codigo:"26", rol:"Licenciados"},
+          {nombre:"CRUZ NAVARRO MARIA (Téc.)", codigo:"26", rol:"Técnicos"}
+        ]}
+      ]},
 function openChecklist(area, tipo){
   const modal = document.getElementById("modal");
   const content = document.getElementById("modal-content");
