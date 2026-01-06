@@ -84,6 +84,7 @@ const SHIFT_CODES = {
 const AREAS_ORDER = [
   "Coordinación",
   "Código Rojo",
+  "Tópico",
   "Triaje/Recuperación",
   "Sedación",
   "Biopsia",
@@ -100,6 +101,7 @@ const AREAS_ORDER = [
 const AREAS = {
   "Coordinación":           { color: "#ffffff", text: "#111a2e" },
   "Código Rojo":            { color: "#ff0000", text: "#ffffff" },
+  "Tópico":                 { color: "#ffffff", text: "#9a3412" },
   "Triaje/Recuperación":    { color: "#7c3aed", text: "#111a2e" },
   "Sedación":               { color: "#facc15", text: "#111a2e" },
   "Biopsia":                { color: "#0b2a6f", text: "#ffffff" },
@@ -113,25 +115,25 @@ const AREAS = {
   "Guardia nocturna":       { color: "#000000", text: "#ffffff" }
 };
 
-/** ====== DATA VACÍA (luego lo llenamos) ======
-  Estructura sugerida:
-  DATA["2026-01-06"] = {
-    "Coordinación": { lic: [...], tec: [...] },
-    "Sedación": { lic: [...], tec: [...] },
-    ...
-  }
-*/
+
 const DATA = {};
 
  DATA["2026-01-06"] = {
   "Coordinación": {
     lic: [
-      { nombre: "ARIAS OSORIO JOVITA", horario: "8:00 am a 7:00 pm" }
+      { nombre: "ARIAS OSORIO JOVITA"}
     ],
     tec: []
   },
 
-  "Sedación": {
+  "Tópico": {
+    lic: [],
+    tec: [
+     { nombre: "PICON BRANDAN ESMILIA SUNAMITA", horario: "7:00 am a 6:00 pm" }
+    ]
+   },
+
+   "Sedación": {
     lic: [
       { nombre: "FLORES DEL VALLE GUADALUPE", horario: "8:00 am a 7:00 pm" }
     ],
@@ -232,6 +234,23 @@ const DATA = {};
   }
 };
 
+DATA["2026-01-07"] = {
+  "Coordinación": { lic: [], tec: [] },
+  "Código Rojo": { lic: [], tec: [] },
+  "Triaje/Recuperación": { lic: [], tec: [] },
+  "Sedación": { lic: [], tec: [] },
+  "Biopsia": { lic: [], tec: [] },
+  "URI": { lic: [], tec: [] },
+  "Resonancia Magnética": { lic: [], tec: [] },
+  "TEM": { lic: [], tec: [] },
+  "Biopsia de mama": { lic: [], tec: [] },
+  "Ecografía convencional": { lic: [], tec: [] },
+  "Biopsia de próstata": { lic: [], tec: [] },
+  "Cardiología": { lic: [], tec: [] },
+  "Tópico": { lic: [], tec: [] },
+  "Guardia nocturna": { lic: [], tec: [] }
+};
+
 
 
 /** ====== UTILIDADES ====== */
@@ -300,6 +319,14 @@ const CHECKLISTS = {
     `
   },
 
+  "Tópico": {
+   "Técnicos": `
+    <b>Apoyo técnico – Tópico</b><br><br>
+    • Recojo y abastecimiento de material<br>
+    • Traslado de muestras<br>
+    • Envío de documentos
+  `
+ },
   "Triaje/Recuperación": {
     "Licenciados": `
       <b>Triaje / Recuperación – Licenciados</b><br><br>
@@ -645,21 +672,32 @@ function render(){
     list.style.borderColor = "rgba(36,49,78,.6)";
 
     // helper para imprimir filas
-    function addPerson(tipo, p){
-      const row = document.createElement("div");
-      row.style.padding = "8px 0";
-      row.style.borderBottom = "1px dashed rgba(36,49,78,.6)";
+   function addPerson(tipo, p){
+  const row = document.createElement("div");
+  row.style.padding = "8px 0";
+  row.style.borderBottom = "1px dashed rgba(36,49,78,.6)";
 
-      const horario = p.horario || SHIFT_CODES[p.codigo] || "Horario no definido";
-      const rolTxt = (tipo === "lic") ? "Lic." : "Tec.";
+  // ✅ Coordinación: solo nombre (sin horario ni rol)
+  if (area === "Coordinación") {
+    row.innerHTML = `
+      <div style="font-weight:800;">${p.nombre}</div>
+      <div style="color:#a9b8d6; font-size:13px;">Lic.</div>
+    `;
+    list.appendChild(row);
+    return;
+  }
 
-      row.innerHTML = `
-        <div style="font-weight:800;">${p.nombre}</div>
-        <div style="color:#a9b8d6; font-size:13px;">${rolTxt} · ${horario}</div>
-      `;
+  // Resto de áreas (normal)
+  const horario = p.horario || "Horario no definido";
+  const rolTxt = (tipo === "lic") ? "Lic." : "Tec.";
 
-      list.appendChild(row);
-    }
+  row.innerHTML = `
+    <div style="font-weight:800;">${p.nombre}</div>
+    <div style="color:#a9b8d6; font-size:13px;">${rolTxt} · ${horario}</div>
+  `;
+
+  list.appendChild(row);
+}
 
     // Licenciados primero
     (areaData.lic || []).forEach(p => addPerson("lic", p));
