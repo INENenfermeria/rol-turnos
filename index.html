@@ -6,401 +6,681 @@
   <title>Rol de Turnos - Enero 2026</title>
   <style>
     :root{
-      --bg:#0b1220; --card:#111a2e; --text:#e7eefc; --muted:#a9b8d6;
-      --blue:#1e3a8a;         /* Biopsia */
-      --red:#b91c1c;          /* URI */
-      --cyan:#06b6d4;         /* Tomografía */
-      --green:#16a34a;        /* RM */
-      --brick:#9a3412;        /* Tópico */
-      --brown:#7c2d12;        /* Eco */
-      --pink:#db2777;         /* Mamá */
-      --yellow:#facc15;       /* Sedación */
-      --purple:#7c3aed;       /* 14 excedente */
-      --line:#24314e;
+      --bg:#0b1220; --card:#111a2e; --text:#e7eefc; --muted:#a9b8d6; --line:#24314e;
     }
     body{margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial; background:var(--bg); color:var(--text);}
-    header{position:sticky; top:0; background:rgba(11,18,32,.95); backdrop-filter: blur(10px); border-bottom:1px solid var(--line); padding:14px 14px 10px;}
-    h1{font-size:16px; margin:0 0 8px;}
+    header{position:sticky; top:0; background:rgba(11,18,32,.95); backdrop-filter: blur(10px); border-bottom:1px solid var(--line); padding:14px;}
+    h1{font-size:16px; margin:0 0 10px;}
     .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
-    select, input{background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px; font-size:14px;}
-    main{padding:14px; max-width:720px; margin:0 auto;}
-    .section-title{font-size:13px; color:var(--muted); margin:16px 2px 10px;}
-    .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:12px; margin-bottom:10px;}
-    .tag{display:inline-flex; align-items:center; gap:8px; font-weight:700; padding:6px 10px; border-radius:999px; font-size:12px;}
-    .tag .dot{width:10px; height:10px; border-radius:50%;}
-    .who{margin-top:10px; display:flex; flex-direction:column; gap:8px;}
-    .person{display:flex; justify-content:space-between; gap:12px; padding:10px; border-radius:12px; border:1px dashed var(--line);}
-    .name{font-weight:700;}
+    select{background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px; font-size:14px;}
+    main{padding:14px; max-width:820px; margin:0 auto;}
     .meta{color:var(--muted); font-size:13px;}
-    .code{font-weight:800;}
-    details{margin-top:14px;}
-    summary{cursor:pointer; color:var(--muted);}
-    .legend{margin-top:10px; color:var(--muted); font-size:13px; line-height:1.4;}
-    .pill{display:inline-block; padding:4px 8px; border-radius:999px; border:1px solid var(--line); margin:4px 6px 0 0;}
-    .empty{color:var(--muted); padding:18px; border:1px dashed var(--line); border-radius:16px; text-align:center;}
+    .area-card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:12px; margin-bottom:10px;}
+    .area-head{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .badge{display:inline-flex; align-items:center; gap:10px; border-radius:999px; padding:8px 12px; font-weight:800; font-size:13px;}
+    .hint{margin-top:10px; color:var(--muted); font-size:13px; border:1px dashed var(--line); padding:10px; border-radius:12px;}
   </style>
 </head>
 <body>
 <header>
   <h1>Rol de Turnos – Enero 2026</h1>
   <div class="row">
-    <label for="day" class="meta">Día:</label>
+    <span class="meta">Día:</span>
     <select id="day"></select>
     <span id="pretty" class="meta"></span>
   </div>
 </header>
 
+
+
 <main>
   <div id="content"></div>
-  <div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:999;">
-  <div style="background:#111a2e; margin:10% auto; padding:16px; max-width:500px; border-radius:16px; color:#e7eefc;">
-    <div id="modal-content"></div>
-    <button onclick="closeModal()" style="margin-top:12px; width:100%; padding:10px; border:none; border-radius:10px;">
-      Cerrar
-    </button>
-  </div>
-</div>
+<div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:999;">
+  <div style="background:#111a2e;
+  margin:6vh auto;
+  padding:16px;
+  max-width:650px;
+  width:92%;
+  border-radius:16px;
+  color:#e7eefc;
+  max-height:80vh;
+  overflow:auto;
+">
+<button id="modal-close" style="
+  position:sticky;
+  top:0;
+  float:right;
+  background:transparent;
+  border:none;
+  color:#e7eefc;
+  font-size:20px;
+  cursor:pointer;
+  z-index:10;
+">✕</button>
 
-  
+  <div id="modal-title" style="font-weight:800; margin-bottom:10px;"></div>
+    <div id="modal-content" style="line-height:1.5; padding-bottom:60px;"></div>
 </main>
 
 <script>
+/** ====== CONFIG FECHA ====== */
+const YEAR = 2026;
+const MONTH = 0; // Enero
+
+const SHIFT_CODES = {
+  "34": "8:00 am – 8:00 pm",
+  "26": "7:00 am – 7:00 pm",
+  "29": "7:00 pm – 7:00 am",
+  "14": "8:00 am – 2:00 pm",
+  "167": "6:00 am – 6:00 pm",
+  "72": "7:00 am – 1:00 pm",
+  "1":  "6:00 am – 7:00 am",
+  "2":  "7:00 am – 7:45 am",
+  "3":  "8:00 am – 7:00 pm"
+};
+
+
+/** ====== AREAS (ORDEN + COLORES) ====== */
+const AREAS_ORDER = [
+  "Coordinación",
+  "Código Rojo",
+  "Triaje/Recuperación",
+  "Sedación",
+  "Biopsia",
+  "URI",
+  "Resonancia Magnética",
+  "TEM",
+  "Biopsia de mama",
+  "Ecografía convencional",
+  "Biopsia de próstata",
+  "Cardiología",
+  "Guardia nocturna"
+];
+
+const AREAS = {
+  "Coordinación":           { color: "#ffffff", text: "#111a2e" },
+  "Código Rojo":            { color: "#ff0000", text: "#ffffff" },
+  "Triaje/Recuperación":    { color: "#7c3aed", text: "#111a2e" },
+  "Sedación":               { color: "#facc15", text: "#111a2e" },
+  "Biopsia":                { color: "#0b2a6f", text: "#ffffff" },
+  "URI":                    { color: "#8e2c2c", text: "#111a2e" },
+  "Resonancia Magnética":   { color: "#16a34a", text: "#111a2e" },
+  "TEM":                    { color: "#06b6d4", text: "#111a2e" },
+  "Biopsia de mama":        { color: "#ff6fb1", text: "#111a2e" },
+  "Ecografía convencional": { color: "#ffffff", text: "#1e3a8a" },
+  "Biopsia de próstata":    { color: "#34d399", text: "#111a2e" },
+  "Cardiología":            { color: "#f97316", text: "#111a2e" },
+  "Guardia nocturna":       { color: "#000000", text: "#ffffff" }
+};
+
+/** ====== DATA VACÍA (luego lo llenamos) ======
+  Estructura sugerida:
+  DATA["2026-01-06"] = {
+    "Coordinación": { lic: [...], tec: [...] },
+    "Sedación": { lic: [...], tec: [...] },
+    ...
+  }
+*/
+const DATA = {};
+
+ DATA["2026-01-06"] = {
+  "Coordinación": {
+    lic: [
+      { nombre: "ARIAS OSORIO JOVITA", horario: "8:00 am a 7:00 pm" }
+    ],
+    tec: []
+  },
+
+  "Sedación": {
+    lic: [
+      { nombre: "FLORES DEL VALLE GUADALUPE", horario: "8:00 am a 7:00 pm" }
+    ],
+    tec: [
+      { nombre: "IDROGO NUÑEZ FLOR MIRA", horario: "8:00 am a 7:00 pm" }
+    ]
+  },
+
+  "Biopsia": {
+    lic: [
+      { nombre: "QUISPE PINCOS MARILU", horario: "8:00 am a 7:00 pm" }
+    ],
+    tec: [
+      { nombre: "SACAYCO MELO ISABEL", horario: "8:00 am a 8:00 pm" }
+    ]
+  },
+
+  "URI": {
+    lic: [
+      { nombre: "LOPEZ REYNOSO LUIGI", horario: "7:00 am a 7:00 pm" }
+    ],
+    tec: [
+      { nombre: "ASTO GUILLERMO REYNA MARLENY", horario: "7:00 am a 7:00 pm" }
+    ]
+  },
+
+  "Resonancia Magnética": {
+    lic: [
+      { nombre: "APONTE LLACCHO ROSA", horario: "7:00 am a 7:00 pm" }
+    ],
+    tec: [
+      { nombre: "SALCEDO BOZA ADELMA", horario: "7:00 am a 7:00 pm" }
+    ]
+  },
+
+  "TEM": {
+    lic: [
+      { nombre: "ARIAS OSORIO JOVITA", horario: "7:00 am a 7:00 pm" },
+      { nombre: "ESTRADA SALAS ELIZABETH", horario: "7:00 am a 7:00 pm" },
+      { nombre: "FLORES DEL VALLE GUADALUPE", horario: "7:00 am a 8:00 am" }
+    ],
+    tec: [
+      { nombre: "MAYON AYALA LEYLA", horario: "7:00 am a 7:00 pm" },
+      { nombre: "PICON BRANDAN ESMILIA SUNAMITA", horario: "6:00 am a 7:00 am" },
+      { nombre: "PEREZ DIAZ ABAD", horario: "8:00 am a 8:00 pm" },
+      { nombre: "IDROGO NUÑEZ FLOR MIRA", horario: "7:00 am a 7:45 am" }
+    ]
+  },
+
+  "Biopsia de mama": {
+    lic: [
+      { nombre: "ARIAS OSORIO JOVITA", horario: "Turno Mañana" },
+      { nombre: "ARIAS OSORIO JOVITA", horario: "Turno Tarde" }
+    ],
+    tec: [
+      { nombre: "NINANYA REYES MARISOL ROCIO", horario: "7:00 am a 7:00 pm" },
+      { nombre: "MIRAVAL PISCONTE LIZ NERIDA", horario: "6:45 pm a 8:00 pm" }
+    ]
+  },
+
+  "Ecografía convencional": {
+    lic: [],
+    tec: [
+      { nombre: "HUAYTA BIZARRO MARISOL LUISA", horario: "7:45 am a 7:00 pm" },
+      { nombre: "MIRAVAL PISCONTE LIZ NERIDA", horario: "8:00 am a 6:45 pm" }
+    ]
+  },
+
+  "Cardiología": {
+    lic: [
+      { nombre: "DE LA CRUZ VILCA DANIXA", horario: "7:00 am a 7:00 pm" },
+      { nombre: "VEJARANO CAMPOS GIOVANNA", horario: "7:00 am a 7:00 pm" },
+      { nombre: "PAZOS SUAREZ MARLENE", horario: "7:00 am a 7:00 pm" } // *
+    ],
+    tec: [
+      { nombre: "ALZAMORA SAIRITUPA AMABELA", horario: "7:00 am a 7:00 pm" },
+      { nombre: "CRUZ NAVARRO MARIA", horario: "7:00 am a 7:00 pm" }, // *
+      { nombre: "REQUEJO ANCAJIMA GLADYS", horario: "7:00 am a 7:00 pm" }
+    ]
+  },
+
+  "Código Rojo": {
+    lic: [
+      { nombre: "PAZOS SUAREZ MARLENE", horario: "7:00 am a 7:00 pm" }
+    ],
+    tec: [
+      { nombre: "CRUZ NAVARRO MARIA", horario: "7:00 am a 7:00 pm" }
+    ]
+  },
+
+  "Guardia nocturna": {
+    lic: [
+      { nombre: "GUTIERREZ LARA CARMEN", horario: "7:00 pm a 7:00 am" }
+    ],
+    tec: [
+      { nombre: "RIVAS ALARCON DAVID", horario: "7:00 pm a 7:00 am" }
+    ]
+  }
+};
+
+
+
+/** ====== UTILIDADES ====== */
+const daySelect = document.getElementById("day");
+const content = document.getElementById("content");
+const pretty = document.getElementById("pretty");
+
+function pad2(n){ return String(n).padStart(2, "0"); }
+function toISODate(d){
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+}
+function fmtPretty(iso){
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString("es-PE", { weekday:"long", day:"2-digit", month:"long", year:"numeric" });
+}
+
+/** ====== 31 DÍAS + SELECCIÓN AUTOMÁTICA ====== */
+function buildJanuaryOptions(){
+  daySelect.innerHTML = "";
+  for(let day=1; day<=31; day++){
+    const d = new Date(YEAR, MONTH, day);
+    const iso = toISODate(d);
+    const opt = document.createElement("option");
+    opt.value = iso;
+    opt.textContent = `${pad2(day)}/01/${YEAR}`;
+    daySelect.appendChild(opt);
+  }
+
+  const today = new Date();
+  const sameJan = today.getFullYear()===YEAR && today.getMonth()===MONTH;
+
+  if (sameJan) {
+    const todayISO = toISODate(today);
+    daySelect.value = todayISO;
+  } else {
+    daySelect.value = `${YEAR}-01-01`;
+  }
+}
 const CHECKLISTS = {
 
-  /* ===================== SEDACIÓN ===================== */
-  "Sedación": {
+  "Coordinación": {
     "Licenciados": `
-      <b>Procedimiento Seguro – Sedación</b><br><br>
-      ☐ Verificar identidad del paciente<br>
-      ☐ Verificar firma del CI<br>
-      ☐ Revisar exámenes de laboratorio<br>
-      ☐ Evaluar estado clínico del paciente<br>
-      ☐ Control de CFV<br>
-      ☐ Sesión educativa<br>
-      ☐ Apoyo emocional<br><br>
-
-      <b>Post procedimiento</b><br>
-      ☐ Control de CFV<br>
-      ☐ Monitoreo del estado clínico<br>
-      ☐ Vigilancia de zona de punción<br>
-      ☐ Registro en notas de enfermería<br><br>
-
-      <i>Nota de seguridad:</i> Garantizar identificación correcta, vigilancia continua y disponibilidad de equipamiento de emergencia.
-    `,
-    "Técnicos": `
-      <b>Preparación y apoyo – Sedación</b><br><br>
-      ☐ Vestimenta de camillas<br>
-      ☐ Oxígeno<br>
-      ☐ Aspiración<br>
-      ☐ Coche de paro<br>
-      ☐ Ambú<br>
-      ☐ Llamado del paciente<br>
-      ☐ Verificar identidad del paciente<br>
-      ☐ Colocación de bata, gorro y botas<br>
-      ☐ Traslado a sala de procedimientos<br>
-      ☐ Asistencia de material según indicación de la enfermera
+      <b>Intervenciones – Coordinación</b><br><br>
+      • Verificar asistencia del personal<br>
+      • Coordinar con Supervisora II<br>
+      • Informar inasistencias y cambios de turno<br>
+      • Reorganización interna del personal<br>
+      • Solicitar personal cuando sea necesario<br>
+      • Reportar incidentes y eventos adversos<br><br>
+      <i>Nota de gestión:</i> Garantizar continuidad operativa, seguridad del paciente y cobertura del servicio.
     `
   },
 
-  /* ===================== CARDIOLOGÍA ===================== */
-  "Cardiología": {
-    "Licenciados": `
-      <b>Intervenciones – Cardiología</b><br><br>
-      ☐ Admisión del paciente<br>
-      ☐ Asignación del médico<br>
-      ☐ Registro e identificación del paciente<br>
-      ☐ Evaluación de riesgo de caída<br>
-      ☐ Atención de procedimientos especiales (EKG – MAPA – HOLTER)<br>
-      ☐ Sesión educativa<br>
-      ☐ Consejería al paciente
-    `,
-    "Técnicos": `
-      <b>Apoyo técnico – Cardiología</b><br><br>
-      ☐ Recepción de voucher<br>
-      ☐ Verificar historia clínica física<br>
-      ☐ Informar al paciente si la HC no ha llegado<br>
-      ☐ Asignar médico<br>
-      ☐ Indicar espera al paciente<br>
-      ☐ Entregar HC a enfermería para admisión interna<br>
-      ☐ Llamado e identificación de pacientes<br>
-      ☐ Control de peso y talla<br>
-      ☐ Colocación de electrodos<br>
-      ☐ Asistencia al paciente durante el procedimiento
-    `
-  },
-
-    "URI": {
-    "Licenciados": `
-      <b>Intervenciones – URI</b><br><br>
-      ☐ Protección radiológica<br>
-      ☐ Procedimiento seguro:<br>
-      &nbsp;&nbsp;• Verificar firma del CI<br>
-      &nbsp;&nbsp;• Revisar exámenes de laboratorio<br>
-      &nbsp;&nbsp;• Evaluar estado clínico del paciente<br>
-      &nbsp;&nbsp;• Control de CFV<br><br>
-
-      ☐ Sesión educativa<br>
-      ☐ Apoyo emocional<br><br>
-
-      <b>Durante el procedimiento</b><br>
-      ☐ Monitoreo de CFV<br>
-      ☐ Monitoreo del estado clínico<br>
-      ☐ Instrumentación<br><br>
-
-      <b>Post procedimiento</b><br>
-      ☐ Control de CFV<br>
-      ☐ Monitoreo del estado clínico<br>
-      ☐ Vigilancia de zona de punción<br>
-      ☐ Registro en notas de enfermería<br><br>
-
-      <i>Nota de seguridad:</i> Mantener protección radiológica y vigilancia clínica permanente del paciente.
-    `,
-    "Técnicos": `
-      <b>Apoyo técnico – URI</b><br><br>
-      ☐ Colocarse EPP y dosímetro<br>
-      ☐ Equipamiento para el procedimiento<br>
-      ☐ Llamado del paciente<br>
-      ☐ Verificar identidad del paciente<br>
-      ☐ Verificar que no porte objetos metálicos<br>
-      ☐ Colocar bata, gorro y botas<br>
-      ☐ Asistencia al paciente durante el procedimiento
-    `
-  },
-
-  /* ===================== BIOPSIA ===================== */
-  "Biopsia": {
-    "Licenciados": `
-      <b>Procedimiento – Biopsia</b><br><br>
-      ☐ Verificar laboratorio y estado clínico<br>
-      ☐ Control de CFV<br>
-      ☐ Sesión educativa<br>
-      ☐ Apoyo emocional<br>
-      ☐ Monitoreo del paciente durante el procedimiento<br>
-      ☐ Instrumentación<br>
-      ☐ Recepción y rotulado de muestra<br>
-      ☐ Post procedimiento: CFV y zona de punción<br>
-      ☐ Notas de enfermería
-    `,
-    "Técnicos": `
-      <b>Apoyo técnico – Biopsia</b><br><br>
-      ☐ Llamado del paciente<br>
-      ☐ Identificación del paciente<br>
-      ☐ Asistencia al paciente<br>
-      ☐ Coordinación durante el procedimiento<br>
-      ☐ Apoyo durante el examen<br>
-      ☐ Entrega de hielo al paciente
-    `
-  },
-
-  /* ===================== BIOPSIA DE MAMA ===================== */
-  "Biopsia de Mama": {
-    "Licenciados": `
-      <b>Procedimiento – Biopsia de Mama</b><br><br>
-      ☐ Procedimiento seguro<br>
-      ☐ Sesión educativa<br>
-      ☐ Apoyo emocional<br>
-      ☐ Instrumentación<br>
-      ☐ Monitoreo del paciente<br>
-      ☐ Notas de enfermería
-    `,
-    "Técnicos": `
-      <b>Apoyo técnico – Biopsia de Mama</b><br><br>
-      ☐ Llamado del paciente<br>
-      ☐ Identificación del paciente<br>
-      ☐ Asistencia al paciente<br>
-      ☐ Coordinación de la biopsia<br>
-      ☐ Apoyo durante el examen<br>
-      ☐ Aplicación de hielo al paciente
-    `
-  },
-
-  /* ===================== TEM ===================== */
-  "Tomografía (TEM)": {
-    "Licenciados": `
-      <b>Intervenciones – TEM</b><br><br>
-      ☐ Identificación del paciente<br>
-      ☐ Valoración clínica<br>
-      ☐ Procedimiento seguro<br>
-      ☐ Apoyo emocional<br>
-      ☐ Canalización<br>
-      ☐ Monitoreo del paciente<br>
-      ☐ Retiro de catéter<br>
-      ☐ Educación para cuidados de alta
-    `,
-    "Técnicos": `
-      <b>Apoyo técnico – TEM</b><br><br>
-      ☐ Llamado del paciente<br>
-      ☐ Verificación de identidad<br>
-      ☐ Confirmar que no porte objetos metálicos<br>
-      ☐ Entrega de jarras<br>
-      ☐ Asistencia al paciente durante el examen<br>
-      ☐ Registrar hora de salida del TEM
-    `
-  },
-
-  /* ===================== RESONANCIA MAGNÉTICA ===================== */
-  "Resonancia Magnética": {
-    "Licenciados": `
-      <b>Intervenciones – Resonancia Magnética</b><br><br>
-      ☐ Identificación y valoración del paciente<br>
-      ☐ Procedimiento seguro<br>
-      ☐ Apoyo emocional<br>
-      ☐ Canalización<br>
-      ☐ Monitoreo del paciente<br>
-      ☐ Retiro de catéter<br>
-      ☐ Educación para cuidados de alta
-    `,
-    "Técnicos": `
-      <b>Apoyo técnico – Resonancia Magnética</b><br><br>
-      ☐ Llamado del paciente<br>
-      ☐ Identificación del paciente<br>
-      ☐ Verificar que no porte objetos metálicos<br>
-      ☐ Colocación de audífonos<br>
-      ☐ Asistencia al paciente durante el examen
-    `
-  },
-
-  /* ===================== CÓDIGO ROJO ===================== */
   "Código Rojo": {
     "Licenciados": `
       <b>Código Rojo – Licenciado(a)</b><br><br>
-      ☐ Administración del coche de paro<br>
-      ☐ Apoyo inmediato al equipo TEM<br><br>
+      • Administración del coche de paro<br>
+      • Apoyo inmediato al equipo TEM<br><br>
       <i>Nota de seguridad:</i> El licenciado(a) asignado debe acudir de inmediato ante emergencia roja.
     `,
     "Técnicos": `
       <b>Código Rojo – Técnico(a)</b><br><br>
-      ☐ Manejo del sistema de oxígeno<br>
-      ☐ Apoyo inmediato al equipo TEM<br><br>
+      • Manejo del sistema de oxígeno<br>
+      • Apoyo inmediato al equipo TEM<br><br>
       <i>Nota de seguridad:</i> El técnico(a) asignado debe acudir de inmediato ante emergencia roja.
+    `
+  },
+
+  "Triaje/Recuperación": {
+    "Licenciados": `
+      <b>Triaje / Recuperación – Licenciados</b><br><br>
+      • Verificar identidad del paciente y firma del CI<br>
+      • Exámenes de laboratorio<br>
+      • Evaluar estado clínico<br>
+      • Control de CFV<br>
+      • Sesión educativa<br>
+      • Apoyo emocional<br><br>
+      <b>Post procedimiento</b><br>
+      • CFV<br>
+      • Monitoreo del estado clínico<br>
+      • Zona de punción<br>
+      • Notas de enfermería
+    `,
+    "Técnicos": `
+      <b>Triaje / Recuperación – Técnicos</b><br><br>
+      • Vestimenta de camillas<br>
+      • Oxígeno<br>
+      • Aspiración<br>
+      • Coche de paro<br>
+      • Ambú<br>
+      • Llamado del paciente<br>
+      • Verificar identidad del paciente<br>
+      • Colocación de bata, gorro y botas<br>
+      • Traslado a sala de procedimientos<br>
+      • Asistencia de material según indicación de la enfermera
+    `
+  },
+
+  "Sedación": {
+    "Licenciados": `
+      <b>Procedimiento Seguro – Sedación</b><br><br>
+      • Verificar identidad del paciente<br>
+      • Verificar firma del CI<br>
+      • Revisar exámenes de laboratorio<br>
+      • Evaluar estado clínico del paciente<br>
+      • Control de CFV<br>
+      • Sesión educativa<br>
+      • Apoyo emocional<br><br>
+      <b>Post procedimiento</b><br>
+      • Control de CFV<br>
+      • Monitoreo del estado clínico<br>
+      • Vigilancia de zona de punción<br>
+      • Registro en notas de enfermería<br><br>
+      <i>Nota de seguridad:</i> Garantizar identificación correcta, vigilancia continua y disponibilidad de equipamiento de emergencia.
+    `,
+    "Técnicos": `
+      <b>Preparación y apoyo – Sedación</b><br><br>
+      • Vestimenta de camillas<br>
+      • Oxígeno<br>
+      • Aspiración<br>
+      • Coche de paro<br>
+      • Ambú<br>
+      • Llamado del paciente<br>
+      • Verificar identidad del paciente<br>
+      • Colocación de bata, gorro y botas<br>
+      • Traslado a sala de procedimientos<br>
+      • Asistencia de material según indicación de la enfermera
+    `
+  },
+
+  "Biopsia": {
+    "Licenciados": `
+      <b>Procedimiento – Biopsia</b><br><br>
+      • Verificar laboratorio y estado clínico<br>
+      • Control de CFV<br>
+      • Sesión educativa<br>
+      • Apoyo emocional<br>
+      • Monitoreo del paciente durante el procedimiento<br>
+      • Instrumentación<br>
+      • Recepción y rotulado de muestra<br>
+      • Post procedimiento: CFV y zona de punción<br>
+      • Notas de enfermería
+    `,
+    "Técnicos": `
+      <b>Apoyo técnico – Biopsia</b><br><br>
+      • Colocarse EPP<br>
+      • Preparar equipamiento para el procedimiento<br>
+      • Llamado del paciente<br>
+      • Verificar identidad del paciente<br>
+      • Colocar bata, gorro y botas<br>
+      • Traslado a sala de procedimientos<br>
+      • Asistencia de material según indicación de la enfermera
+    `
+  },
+
+  "URI": {
+    "Licenciados": `
+      <b>Intervenciones – URI</b><br><br>
+      • Protección radiológica<br>
+      • Procedimiento seguro: firma del CI, laboratorio, estado clínico y CFV<br>
+      • Sesión educativa<br>
+      • Apoyo emocional<br><br>
+      <b>Durante el procedimiento</b><br>
+      • Monitoreo de CFV y estado clínico<br>
+      • Instrumentación<br><br>
+      <b>Post procedimiento</b><br>
+      • CFV<br>
+      • Monitoreo del estado clínico<br>
+      • Zona de punción<br>
+      • Notas de enfermería<br><br>
+      <i>Nota de seguridad:</i> Mantener protección radiológica y vigilancia clínica permanente del paciente.
+    `,
+    "Técnicos": `
+      <b>Apoyo técnico – URI</b><br><br>
+      • Colocarse EPP y dosímetro<br>
+      • Equipamiento para el procedimiento<br>
+      • Llamado del paciente<br>
+      • Verificar identidad del paciente<br>
+      • Verificar que no porte objetos metálicos<br>
+      • Colocar bata, gorro y botas<br>
+      • Asistencia al paciente durante el procedimiento
+    `
+  },
+
+  "Resonancia Magnética": {
+    "Licenciados": `
+      <b>Intervenciones – Resonancia Magnética</b><br><br>
+      • Identificación y valoración del paciente<br>
+      • Procedimiento seguro<br>
+      • Apoyo emocional<br>
+      • Canalización<br>
+      • Monitoreo del paciente<br>
+      • Retiro de catéter<br>
+      • Educación para cuidados de alta
+    `,
+    "Técnicos": `
+      <b>Apoyo técnico – Resonancia Magnética</b><br><br>
+      • Llamado del paciente<br>
+      • Identificación del paciente<br>
+      • Verificar que no porte objetos metálicos<br>
+      • Verificar correcta colocación de audífonos<br>
+      • Asistencia al paciente durante el examen
+    `
+  },
+
+  "TEM": {
+    "Licenciados": `
+      <b>Intervenciones – TEM</b><br><br>
+      • Admisión, identificación y valoración<br>
+      • Riesgo de caída<br>
+      • Sesión educativa<br>
+      • Coordinación con tecnólogo médico<br>
+      • Coordinación de pacientes no ambulatorios<br>
+      • Verificar ayuno, contraste y firma CI (si aplica)<br>
+      • Registrar hora de atención RX<br>
+      • Verificar retorno venoso y permeabilidad (no ambulatorios)
+    `,
+    "Técnicos": `
+      <b>Apoyo técnico – TEM</b><br><br>
+      • Llamado del paciente<br>
+      • Verificar que no porte objetos metálicos<br>
+      • Entrega de jarras (si aplica)<br>
+      • Asistencia al paciente durante el examen<br>
+      • Registrar hora de salida de TEM
+    `
+  },
+
+  "Biopsia de mama": {
+    "Licenciados": `
+      <b>Procedimiento – Biopsia de mama</b><br><br>
+      • Procedimiento seguro<br>
+      • Sesión educativa<br>
+      • Apoyo emocional<br>
+      • Instrumentación<br>
+      • Monitoreo del paciente<br>
+      • Notas de enfermería
+    `,
+    "Técnicos": `
+      <b>Apoyo técnico – Biopsia de mama</b><br><br>
+      • Llamado del paciente<br>
+      • Identificación del paciente<br>
+      • Asistir al paciente<br>
+      • Coordinar asistencia de la biopsia<br>
+      • Apoyo durante el examen<br>
+      • Aplicación de hielo al paciente
+    `
+  },
+
+  "Ecografía convencional": {
+    "Técnicos": `
+      <b>Apoyo técnico – Ecografía convencional</b><br><br>
+      • Llamado del paciente<br>
+      • Identificación del paciente<br>
+      • Verificar ayuno<br>
+      • Asistir al paciente durante el examen de ecografía
+    `
+  },
+
+  "Biopsia de próstata": {
+    "Licenciados": `
+      <b>Procedimiento – Biopsia de próstata</b><br><br>
+      • Procedimiento seguro<br>
+      • Sesión educativa<br>
+      • Apoyo emocional<br>
+      • Instrumentación<br>
+      • Monitoreo del paciente<br>
+      • Notas de enfermería
+    `,
+    "Técnicos": `
+      <b>Apoyo técnico – Biopsia de próstata</b><br><br>
+      • Llamado del paciente<br>
+      • Identificación del paciente<br>
+      • Apoyo durante el procedimiento<br>
+      • Preparación y traslado según indicación de enfermería
+    `
+  },
+
+  "Cardiología": {
+    "Licenciados": `
+      <b>Intervenciones – Cardiología</b><br><br>
+      • Admisión<br>
+      • Asignación del Dr<br>
+      • Registro e identificación<br>
+      • Riesgo de caída<br>
+      • Procedimientos especiales (EKG, MAPA, HOLTER)<br>
+      • Sesión educativa<br>
+      • Consejería
+    `,
+    "Técnicos": `
+      <b>Apoyo técnico – Cardiología</b><br><br>
+      • Recepción de voucher<br>
+      • Verificar HC física<br>
+      • Informar si HC no ha llegado<br>
+      • Asignar médico<br>
+      • Indicar espera<br>
+      • Pasar HC a enfermería (admisión interna)<br>
+      • Llamado e identificación<br>
+      • Peso y talla<br>
+      • Colocación de electrodos<br>
+      • Asistencia al paciente
     `
   }
 
 };
 
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modal-title");
+const modalContent = document.getElementById("modal-content");
 
-/** ---------- MODAL ---------- */
-function openChecklist(area, tipo){
-  const modal = document.getElementById("modal");
-  const content = document.getElementById("modal-content");
-  const checklist = CHECKLISTS[area]?.[tipo];
+document.addEventListener("click", (e) => {
+  if (e.target.id === "modal-close") {
+    closeModal();
+  }
+  if (e.target === modal) {
+    closeModal();
+  }
+});
 
-  content.innerHTML = checklist ? checklist : "<b>No hay checklist definido.</b>";
-  modal.style.display = "block";
-}
-function closeModal(){
-  document.getElementById("modal").style.display = "none";
-}
 
-/** ---------- UI RENDER ---------- */
-const daySelect = document.getElementById("day");
-const content = document.getElementById("content");
-const pretty = document.getElementById("pretty");
+function openChecklist(area){
+  // Si el área tiene dos roles, mostramos ambos. Si solo tiene uno, mostramos ese.
+  const entry = CHECKLISTS[area];
+  modalTitle.textContent = area;
 
-function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-function fmtDate(iso){
-  const d = new Date(iso+"T00:00:00");
-  return d.toLocaleDateString("es-PE", {weekday:"long", year:"numeric", month:"long", day:"2-digit"});
-}
+  if (!entry){
+    modalContent.innerHTML = "<b>No hay checklist definido para esta área.</b>";
+  } else {
+    const lic = entry["Licenciados"];
+    const tec = entry["Técnicos"];
 
-function buildDayOptions(){
-  const keys = Object.keys(DATA).sort();
-  keys.forEach(k=>{
-    const opt = document.createElement("option");
-    opt.value = k;
-    opt.textContent = k;
-    daySelect.appendChild(opt);
-  });
-  if(keys.length) daySelect.value = keys[0];
-}
-
-function areaTag(area, tipo){
-  const cfg = AREAS[area] || {colorVar:"--line"};
-  const color = cssVar(cfg.colorVar);
-
-  const tag = document.createElement("div");
-  tag.className = "tag";
-  tag.style.cursor = "pointer";
-  tag.style.background = "rgba(255,255,255,.04)";
-  tag.style.border = "1px solid var(--line)";
-  tag.onclick = () => openChecklist(area, tipo);
-
-  const dot = document.createElement("span");
-  dot.className = "dot";
-  dot.style.background = color;
-
-  const txt = document.createElement("span");
-  txt.textContent = area;
-
-  tag.appendChild(dot);
-  tag.appendChild(txt);
-  return tag;
-}
-
-function render(){
-  const key = daySelect.value;
-  const day = DATA[key];
-  content.innerHTML = "";
-
-  if(!day){
-    content.innerHTML = `<div class="empty">No hay datos para este día.</div>`;
-    pretty.textContent = "";
-    return;
+    if (lic && tec){
+      modalContent.innerHTML = `
+        <div style="padding:10px; border:1px dashed #24314e; border-radius:12px; margin-bottom:10px;">
+          <b>Licenciados</b><br><br>${lic}
+        </div>
+        <div style="padding:10px; border:1px dashed #24314e; border-radius:12px;">
+          <b>Técnicos</b><br><br>${tec}
+        </div>
+      `;
+    } else if (lic){
+      modalContent.innerHTML = lic;
+    } else if (tec){
+      modalContent.innerHTML = tec;
+    } else {
+      modalContent.innerHTML = "<b>No hay checklist definido.</b>";
+    }
   }
 
-  pretty.textContent = "• " + fmtDate(key) + " • " + (day.servicio || "");
+  modal.style.display = "block";
+}
 
-  day.bloques.forEach(b=>{
-    const h = document.createElement("div");
-    h.className = "section-title";
-    h.textContent = b.tipo;
-    content.appendChild(h);
+function closeModal(){
+  modal.style.display = "none";
+}
 
-    b.items.forEach(item=>{
-      const card = document.createElement("div");
-      card.className = "card";
-      card.appendChild(areaTag(item.area, b.tipo));
 
-      const who = document.createElement("div");
-      who.className = "who";
+modal.addEventListener("click", (e)=>{ if(e.target === modal) closeModal(); });
 
-      (item.personas || []).forEach(p=>{
-        const row = document.createElement("div");
-        row.className = "person";
 
-        const left = document.createElement("div");
-        const name = document.createElement("div");
-        name.className = "name";
-        name.textContent = p.nombre;
 
-        const meta = document.createElement("div");
-        meta.className = "meta";
-        const hours = SHIFT_CODES[p.codigo] || "Horario no definido";
-        meta.textContent = hours;
 
-        left.appendChild(name);
-        left.appendChild(meta);
+/** ====== RENDER ====== */
+function render(){
+  const iso = daySelect.value;
+  pretty.textContent = "• " + fmtPretty(iso);
 
-        const right = document.createElement("div");
-        right.className = "code";
-        right.textContent = `(${p.codigo})`;
+  const dayData = DATA[iso] || {};
+  content.innerHTML = "";
 
-        row.appendChild(left);
-        row.appendChild(right);
-        who.appendChild(row);
-      });
+  AREAS_ORDER.forEach(area=>{
+    // ✅ si el área NO existe en la data del día, NO se muestra
+    const areaData = dayData[area];
+    if (!areaData) return;
 
-      card.appendChild(who);
-      content.appendChild(card);
-    });
+    // ✅ si existe pero no tiene lic ni tec, NO se muestra
+    const hasLic = areaData?.lic?.length;
+    const hasTec = areaData?.tec?.length;
+    if (!hasLic && !hasTec) return;
+
+    const cfg = AREAS[area];
+
+    // Card
+    const card = document.createElement("div");
+    card.className = "area-card";
+
+    // Header
+    const head = document.createElement("div");
+    head.className = "area-head";
+
+    // Badge (abre checklist excepto Guardia nocturna)
+    const badge = document.createElement("div");
+    badge.className = "badge";
+    badge.style.background = cfg.color;
+    badge.style.color = cfg.text;
+    badge.textContent = (area === "Código Rojo" ? "⚠️ " : "") + area;
+
+    const noChecklist = (area === "Guardia nocturna");
+    badge.style.cursor = noChecklist ? "default" : "pointer";
+    badge.onclick = () => {
+      if (noChecklist) return;
+      openChecklist(area);
+    };
+
+    head.appendChild(badge);
+    card.appendChild(head);
+
+    // Contenedor de lista
+    const list = document.createElement("div");
+    list.className = "hint";
+    list.style.borderStyle = "solid";
+    list.style.borderColor = "rgba(36,49,78,.6)";
+
+    // helper para imprimir filas
+    function addPerson(tipo, p){
+      const row = document.createElement("div");
+      row.style.padding = "8px 0";
+      row.style.borderBottom = "1px dashed rgba(36,49,78,.6)";
+
+      const horario = p.horario || SHIFT_CODES[p.codigo] || "Horario no definido";
+      const rolTxt = (tipo === "lic") ? "Lic." : "Tec.";
+
+      row.innerHTML = `
+        <div style="font-weight:800;">${p.nombre}</div>
+        <div style="color:#a9b8d6; font-size:13px;">${rolTxt} · ${horario}</div>
+      `;
+
+      list.appendChild(row);
+    }
+
+    // Licenciados primero
+    (areaData.lic || []).forEach(p => addPerson("lic", p));
+    // Técnicos después
+    (areaData.tec || []).forEach(p => addPerson("tec", p));
+
+    // quitar la línea final del último
+    const last = list.lastElementChild;
+    if (last) last.style.borderBottom = "none";
+
+    card.appendChild(list);
+    content.appendChild(card);
   });
 }
 
+
+
+/** ====== INIT ====== */
 daySelect.addEventListener("change", render);
-buildDayOptions();
+buildJanuaryOptions();
 render();
 </script>
 </body>
 </html>
-
-
