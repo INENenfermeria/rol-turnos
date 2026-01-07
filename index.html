@@ -235,22 +235,94 @@ const DATA = {};
 };
 
 DATA["2026-01-07"] = {
-  "Coordinación": { lic: [], tec: [] },
-  "Código Rojo": { lic: [], tec: [] },
-  "Triaje/Recuperación": { lic: [], tec: [] },
-  "Sedación": { lic: [], tec: [] },
-  "Biopsia": { lic: [], tec: [] },
-  "URI": { lic: [], tec: [] },
-  "Resonancia Magnética": { lic: [], tec: [] },
-  "TEM": { lic: [], tec: [] },
-  "Biopsia de mama": { lic: [], tec: [] },
-  "Ecografía convencional": { lic: [], tec: [] },
-  "Biopsia de próstata": { lic: [], tec: [] },
-  "Cardiología": { lic: [], tec: [] },
-  "Tópico": { lic: [], tec: [] },
-  "Guardia nocturna": { lic: [], tec: [] }
-};
 
+  "Coordinación": {
+    lic: [ { nombre: "ARIAS OSORIO JOVITA" } ],
+    tec: []
+  },
+
+  "Tópico": {
+    lic: [],
+    tec: [ { nombre: "OBANDO CASTILLO ANACORE", horario: "6:00 am a 6:00 pm" } ]
+  },
+
+  "Triaje/Recuperación": {
+    lic: [ { nombre: "MORENO PALOMINO PAMELA", horario: "2:00 pm a 8:00 pm" } ],
+    tec: []
+  },
+
+  "Sedación": {
+    lic: [ { nombre: "FLORES DEL VALLE GUADALUPE", horario: "7:00 am a 7:00 pm" } ],
+    tec: []
+  },
+
+  "Biopsia": {
+    lic: [ { nombre: "MOLINA LESCANO CINTHYA", horario: "8:00 am a 8:00 pm" } ],
+    tec: []
+  },
+
+  "URI": {
+    lic: [ { nombre: "CULQUI CASTAÑEDA ROCIO", horario: "7:00 am a 7:00 pm" } ],
+    tec: [ { nombre: "CAMPANA PECHO ELISA ADELAYDA", horario: "7:00 am a 7:00 pm" } ]
+  },
+
+  "Resonancia Magnética": {
+    lic: [ { nombre: "FLORES PALOMO ROSARIO", horario: "7:00 am a 7:00 pm" } ],
+    tec: [ { nombre: "AQUINO PAUCAR ELIZABETH", horario: "7:00 am a 7:00 pm" } ]
+  },
+
+  "TEM": {
+    lic: [
+      { nombre: "ARIAS OSORIO JOVITA", horario: "7:00 am a 7:00 pm" },
+      { nombre: "GONZALES RIVAS NIEVES", horario: "8:00 am a 2:00 pm" }
+    ],
+    tec: [
+      { nombre: "RIVAS MORI LEONOR", horario: "7:00 am a 7:00 pm" },
+      { nombre: "LUCANA YUCRA RAQUEL JESSICA", horario: "8:00 am a 8:00 pm" }
+    ]
+  },
+
+  "Biopsia de mama": {
+    lic: [],
+    tec: [ { nombre: "VERGARAY SALAZAR NOEMI ANCELMA", horario: "7:00 am a 7:00 pm" } ]
+  },
+
+  "Ecografía convencional": {
+    lic: [],
+    tec: [
+      { nombre: "SOLIS BUSTINZA LUCILA", horario: "7:00 am a 7:00 pm" },
+      { nombre: "DEL CASTILLO TORRES CARMELA", horario: "8:00 am a 8:00 pm" }
+    ]
+  },
+
+  "Biopsia de próstata": {
+    lic: [],
+    tec: [ { nombre: "LLULLUY RAMOS SHEYLLA YISSELLA", horario: "8:00 am a 8:00 pm" } ]
+  },
+
+  "Cardiología": {
+    lic: [
+      { nombre: "PEÑA RIVERA CARMELA", horario: "7:00 am a 7:00 pm" },
+      { nombre: "SANCHEZ OSCO OLENKY PIERINA", horario: "7:00 am a 7:00 pm" },
+      { nombre: "NAVARRO GOMEZ ADRIANA LEONOR", horario: "7:00 am a 7:00 pm" }
+    ],
+    tec: [
+      { nombre: "MUÑOZ SEQUEIROS LUZMILA", horario: "7:00 am a 7:00 pm" },
+      { nombre: "MEJIA CALERO MIRTHA GUIOVANA", horario: "7:00 am a 7:00 pm" },
+      { nombre: "BALDEON MARTINEZ ROSSANA AMPARO", horario: "8:00 am a 2:00 pm" }
+    ]
+  },
+
+  "Código Rojo": {
+    lic: [],
+    tec: []
+  },
+
+  "Guardia nocturna": {
+    lic: [ { nombre: "QUISPE PINCOS MARILU", horario: "7:00 pm a 7:00 am" } ],
+    tec: [ { nombre: "PEREZ DIAZ ABAD", horario: "7:00 pm a 7:00 am" } ]
+  }
+};
 
 
 /** ====== UTILIDADES ====== */
