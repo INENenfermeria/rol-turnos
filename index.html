@@ -1109,20 +1109,27 @@ function render(){
     list.style.borderColor = "rgba(36,49,78,.6)";
 
     // helper para imprimir filas
-   function addPerson(tipo, p){
+function addPerson(tipo, p){
   const row = document.createElement("div");
   row.style.padding = "8px 0";
   row.style.borderBottom = "1px dashed rgba(36,49,78,.6)";
 
-  // ✅ Coordinación: solo nombre (sin horario ni rol)
-  if (area === "Coordinación") {
-    row.innerHTML = `
-      <div style="font-weight:800;">${p.nombre}</div>
-      <div style="color:#a9b8d6; font-size:13px;">Lic.</div>
-    `;
-    list.appendChild(row);
-    return;
-  }
+  const rolTxt = (tipo === "lic") ? "Lic." : "Tec.";
+
+  // ⬇️ horario opcional
+  const horario = p.horario || "";
+  const horarioHTML = horario
+    ? `<div style="color:#a9b8d6; font-size:13px;">${rolTxt} · ${horario}</div>`
+    : "";
+
+  row.innerHTML = `
+    <div style="font-weight:800;">${p.nombre}</div>
+    ${horarioHTML}
+  `;
+
+  list.appendChild(row);
+}
+
 
   // Resto de áreas (normal)
   const horario = p.horario || "Horario no definido";
