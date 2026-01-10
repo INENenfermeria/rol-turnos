@@ -60,6 +60,8 @@
 
   <div id="modal-title" style="font-weight:800; margin-bottom:10px;"></div>
     <div id="modal-content" style="line-height:1.5; padding-bottom:60px;"></div>
+</div> <!-- cierre del modal-box -->
+</div>   <!-- cierre del modal overlay -->
 </main>
 
 <script>
@@ -1131,19 +1133,7 @@ function addPerson(tipo, p){
 }
 
 
-  // Resto de áreas (normal)
-  const horario = p.horario || "Horario no definido";
-  const rolTxt = (tipo === "lic") ? "Lic." : "Tec.";
-
-  row.innerHTML = `
-    <div style="font-weight:800;">${p.nombre}</div>
-    <div style="color:#a9b8d6; font-size:13px;">${rolTxt} · ${horario}</div>
-  `;
-
-  list.appendChild(row);
-}
-
-    // Licenciados primero
+     // Licenciados primero
     (areaData.lic || []).forEach(p => addPerson("lic", p));
     // Técnicos después
     (areaData.tec || []).forEach(p => addPerson("tec", p));
